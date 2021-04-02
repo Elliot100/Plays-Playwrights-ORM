@@ -71,9 +71,9 @@ class Play
   end
 end
 
-
+##########################################################################################
 class Playwright
-  attr_accessor :name, :birth_year
+  attr_accessor :id, :name, :birth_year
 
   def self.all
     data = PlayDBConnection.instance.execute("SELECT * FROM playwrights")
@@ -84,5 +84,15 @@ class Playwright
     @id = options['id']
     @name = options['name']
     @birth_year = options['birth_year']
+  end
+
+  def create
+    raise "#{self} already in database" if self.id
+    PlayDBConnection.instance.execute(<<-SQL,self.name, self.birth_year)
+      INSERT INTO playwrights (name, birth_year)
+      VALUES
+        (?, ?)
+    SQL
+    self.id = PlayDBConnection.instance.last_insert_row_id
   end
 end
