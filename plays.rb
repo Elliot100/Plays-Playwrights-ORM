@@ -29,6 +29,17 @@ class Play
     Play.new(play.first)
   end
 
+  def self.find_by_playwright(name)
+    play = PlayDBConnection.instance.execute(<<-SQL, name )
+      SELECT *
+      FROM plays
+        JOIN playwrights ON playwrights.id = plays.playwright_id
+      WHERE name = ?
+    SQL
+    return nil unless play.length > 0
+    play.map {|ele| Play.new(ele) }
+  end
+
   def initialize(options)
     @id = options['id']
     @title = options['title']
