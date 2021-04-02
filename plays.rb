@@ -80,6 +80,16 @@ class Playwright
     data.map { |ele| Playwright.new(ele) }
   end
 
+  def self.find_by_name(name)
+    person = PlayDBConnection.instance.execute(<<-SQL, name)
+      SELECT *
+      FROM playwrights
+      WHERE name = ?
+    SQL
+    return nil unless person
+    Playwright.new(person.first)
+  end 
+
   def initialize(options)
     @id = options['id']
     @name = options['name']
@@ -107,4 +117,6 @@ class Playwright
         id = ?
     SQL
   end
+
+  
 end
